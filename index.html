@@ -13,9 +13,9 @@
             }
 
             /* 隐藏滚动条 */
-            ::-webkit-scrollbar {
+            /* ::-webkit-scrollbar {
                 display: none;
-            }
+            } */
 
             .time_main {
                 width: 100%;
@@ -114,14 +114,17 @@
                 padding: 12px 0;
             }
 
+            .picker-column {
+                text-align: center;
+                height: 150px;
+                overflow: hidden;
+                touch-action: none;
+            }
+
             /* 时分样式 */
             .hour_box,
             .minute_box {
                 width: 50%;
-                text-align: center;
-                height: 150px;
-                overflow: hidden;
-                overflow-y: auto;
             }
             /* 时分样式 */
 
@@ -130,10 +133,6 @@
             .moon_box,
             .day_box {
                 width: 33%;
-                text-align: center;
-                height: 150px;
-                overflow: hidden;
-                overflow-y: auto;
             }
             /* 年月日样式 */
 
@@ -142,17 +141,6 @@
                 font-size: 14px;
                 line-height: 30px;
             }
-
-            .item:first-child,
-            .item:first-child {
-                margin-top: 60px;
-            }
-
-            .item:last-child,
-            .item:last-child {
-                margin-bottom: 60px;
-            }
-
             .select_line {
                 position: absolute;
                 top: 71px;
@@ -190,9 +178,13 @@
             <div class="time_box1 dom_hide">
                 <div class="time_box1_main">
                     <!-- 时钟 -->
-                    <div class="hour_box" data-time="hour"></div>
+                    <div class="hour_box picker-column" data-time="hour">
+                        <div class="picker-content"></div>
+                    </div>
                     <!-- 分钟 -->
-                    <div class="minute_box" data-time="minute"></div>
+                    <div class="minute_box picker-column" data-time="minute">
+                        <div class="picker-content"></div>
+                    </div>
                 </div>
                 <!-- 选择线 -->
                 <p class="select_line"></p>
@@ -207,11 +199,17 @@
             <div class="time_box2 dom_hide">
                 <div class="time_box2_main">
                     <!-- 年 -->
-                    <div class="year_box" data-time="year"></div>
+                    <div class="year_box picker-column" data-time="year">
+                        <div class="picker-content"></div>
+                    </div>
                     <!-- 月 -->
-                    <div class="moon_box" data-time="moon"></div>
+                    <div class="moon_box picker-column" data-time="moon">
+                        <div class="picker-content"></div>
+                    </div>
                     <!-- 日 -->
-                    <div class="day_box" data-time="day"></div>
+                    <div class="day_box picker-column" data-time="day">
+                        <div class="picker-content"></div>
+                    </div>
                 </div>
                 <!-- 选择线 -->
                 <p class="select_line"></p>
@@ -259,6 +257,111 @@
             },
         };
 
+        class Picker {
+            constructor(options) {
+                this.options = Object.assign({}, options);
+                this.isPointerdown = false;
+                this.itemHeight = 30; // 列表项高度
+                this.maxY = this.itemHeight * 2;
+                this.minY = this.itemHeight * (3 - this.options.list.length);
+                this.lastY = 0;
+                this.diffY = 0;
+                this.translateY = 0; // 当前位置
+                this.friction = 0.95; // 摩擦系数
+                this.distanceY = 0; // 滑动距离
+                this.result = this.options.list[0];
+                this.render();
+                this.bindEventListener();
+            }
+            render() {
+                let html = '';
+                for (const item of this.options.list) {
+                    html += '<div class="item">' + item + '</div>';
+                }
+                this.options.pickerContent.innerHTML = html;
+                this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.maxY + 'px, 0px)';
+            }
+            handlePointerdown(e) {
+                // 如果是鼠标点击，只响应左键
+                if (e.pointerType === 'mouse' && e.button !== 0) {
+                    return;
+                }
+                this.options.pickerColumn.setPointerCapture(e.pointerId);
+                this.isPointerdown = true;
+                this.lastY = e.clientY;
+                this.diffY = 0;
+                this.distanceY = 0;
+                this.getTransform();
+                this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.translateY + 'px, 0px)';
+                this.options.pickerContent.style.transition = 'none';
+            }
+            handlePointermove(e) {
+                if (this.isPointerdown) {
+                    this.diffY = e.clientY - this.lastY;
+                    this.translateY += this.diffY;
+                    this.lastY = e.clientY;
+                    this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.translateY + 'px, 0px)';
+                }
+            }
+            handlePointerup(e) {
+                if (this.isPointerdown) {
+                    this.isPointerdown = false;
+                    this.getTranslateY();
+                    // 滑动距离与时长成正比且最短时长为300ms
+                    const duration = Math.max(Math.abs(this.distanceY) * 1.5, 300);
+                    this.options.pickerContent.style.transition = 'transform ' + duration + 'ms ease';
+                    this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.translateY + 'px, 0px)';
+                }
+            }
+            handlePointercancel(e) {
+                if (this.isPointerdown) {
+                    this.isPointerdown = false;
+                }
+            }
+            bindEventListener() {
+                this.handlePointerdown = this.handlePointerdown.bind(this);
+                this.handlePointermove = this.handlePointermove.bind(this);
+                this.handlePointerup = this.handlePointerup.bind(this);
+                this.handlePointercancel = this.handlePointercancel.bind(this);
+                this.options.pickerColumn.addEventListener('pointerdown', this.handlePointerdown);
+                this.options.pickerColumn.addEventListener('pointermove', this.handlePointermove);
+                this.options.pickerColumn.addEventListener('pointerup', this.handlePointerup);
+                this.options.pickerColumn.addEventListener('pointercancel', this.handlePointercancel);
+            }
+            getTransform() {
+                const transform = window.getComputedStyle(this.options.pickerContent).getPropertyValue('transform');
+                this.translateY = parseFloat(transform.split(',')[5]);
+            }
+            getTranslateY() {
+                let speed = this.diffY;
+                while (Math.abs(speed) > 1) {
+                    speed *= this.friction;
+                    this.distanceY += speed;
+                }
+                // 边界判断
+                let y = this.translateY + this.distanceY;
+                if (y > this.maxY) {
+                    this.translateY = this.maxY;
+                    this.distanceY = this.maxY - this.translateY;
+                } else if (y < this.minY) {
+                    this.translateY = this.minY;
+                    this.distanceY = this.minY - this.translateY;
+                } else {
+                    this.translateY = y;
+                }
+                // 计算停止位置使其为itemHeight的整数倍
+                let i = Math.round(this.translateY / this.itemHeight);
+                this.translateY = i * this.itemHeight;
+                this.result = this.options.list[2 - this.translateY / this.itemHeight];
+                days = createList(1, getDays(Number(yearPicker.result), Number(monthPicker.result)));
+                dayPicker = new Picker({
+                    pickerColumn: pickerColumns[4],
+                    pickerContent: pickerContents[4],
+                    list: days,
+                });
+            }
+        }
+
         console.log(isMobile.any());
 
         // 获取当前时间
@@ -277,116 +380,116 @@
         getNowTime();
         setInterval(getNowTime, 1000);
 
-        // *****时分选择器*****
-        function DomRender() {
-            // 小时渲染
-            var hour_box = document.querySelector('.hour_box');
-            var hour_box_html = '';
-            for (let i = 0; i < 24; i++) {
-                hour_box_html += '<div class="item">' + ('0' + i).slice(-2) + '</div>';
-            }
-            hour_box.innerHTML = hour_box_html;
-            // 分钟渲染
-            var minute_box = document.querySelector('.minute_box');
-            var minute_box_html = '';
-            for (let i = 0; i < 60; i++) {
-                minute_box_html += '<div class="item">' + ('0' + i).slice(-2) + '</div>';
-            }
-            minute_box.innerHTML = minute_box_html;
-            // 年份渲染
-            var year_box = document.querySelector('.year_box');
-            var year_box_html = '';
-            for (let i = 1970; i <= 2099; i++) {
-                year_box_html += '<div class="item">' + i + '</div>';
-            }
-            year_box.innerHTML = year_box_html;
+        // *****数据渲染*****
+        var start_year = 2000;
+        var end_year = 2022;
+        var hours = createList(0, 23),
+            minutes = createList(0, 59),
+            years = createList(start_year, end_year),
+            months = createList(1, 12),
+            days = createList(1, 31);
+        const pickerColumns = document.querySelectorAll('.picker-column');
+        const pickerContents = document.querySelectorAll('.picker-content');
+        const hourPicker = new Picker({
+            pickerColumn: pickerColumns[0],
+            pickerContent: pickerContents[0],
+            list: hours,
+        });
+        const minutePicker = new Picker({
+            pickerColumn: pickerColumns[1],
+            pickerContent: pickerContents[1],
+            list: minutes,
+        });
+        const yearPicker = new Picker({
+            pickerColumn: pickerColumns[2],
+            pickerContent: pickerContents[2],
+            list: years,
+        });
+        const monthPicker = new Picker({
+            pickerColumn: pickerColumns[3],
+            pickerContent: pickerContents[3],
+            list: months,
+        });
+        var dayPicker = new Picker({
+            pickerColumn: pickerColumns[4],
+            pickerContent: pickerContents[4],
+            list: days,
+        });
+        // 判断start_year是否为闰年
+        function isLeapYear(year) {
+            return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
         }
-        DomRender();
+        isLeapYear(start_year);
 
-        // 监听滚动条滚动
-        var scrollTopStart = 0;
-        var hour_box = document.querySelector('.hour_box');
-        var minute_box = document.querySelector('.minute_box');
-        var year_box = document.querySelector('.year_box');
-        var item_scrollHeight = 30;
-        // 对比时间的值
-        var start = 0;
-        var end = 0;
-        var timer = null;
-
-        // 判断滚动条走向
-        function DomScroll(Dom) {
-            Dom.addEventListener('scroll', function (e) {
-                if (e.target.scrollTop > scrollTopStart) {
-                    // 向下滚动
-                    scrollTopStart = e.target.scrollTop;
-                    if (e.target.scrollTop % item_scrollHeight != 0) {
-                        e.target.scrollTop++;
-                    }
+        // 月份天数
+        function getDays(year, month) {
+            if (month === 2) {
+                if (isLeapYear(year)) {
+                    return 29;
                 } else {
-                    // 向上滚动
-                    scrollTopStart = e.target.scrollTop;
-                    if (e.target.scrollTop % item_scrollHeight != 0) {
-                        e.target.scrollTop--;
-                    }
+                    return 28;
                 }
-                // 判断滚动条是否停止滚动
-                clearTimeout(timer); // 每次滚动前 清除一次
-                start = e.target.scrollTop;
-                timer = setTimeout(function () {
-                    end = e.target.scrollTop;
-                    if (end == start) {
-                        console.log('停止滚动了');
-                    }
-                }, 500);
-            });
+            } else if (
+                month === 1 ||
+                month === 3 ||
+                month === 5 ||
+                month === 7 ||
+                month === 8 ||
+                month === 10 ||
+                month === 12
+            ) {
+                return 31;
+            } else {
+                return 30;
+            }
         }
-        DomScroll(hour_box);
-        DomScroll(minute_box);
-        DomScroll(year_box);
 
-        // 点击确定获取时间
-        var hour_txt = '00';
-        var minute_txt = '00';
+        // 调用方式
+        function createList(start, end) {
+            const list = [];
+            let j = 0;
+            for (i = start; i <= end; i++) {
+                list[j] = i < 10 ? '0' + i : '' + i;
+                if (j <= end) {
+                    j++;
+                }
+            }
+            return list;
+        }
+
+        // 确定按钮
         var sure = document.querySelectorAll('.Sure');
         var choose = '1';
         for (let i = 0; i < sure.length; i++) {
             sure[i].addEventListener('click', function (e) {
                 if (choose == 1) {
-                    hour_minute();
+                    document.querySelector('.mark').innerHTML = hourPicker.result + ':' + minutePicker.result;
+                }
+                if (choose == 2) {
+                    document.querySelector('.mark').innerHTML =
+                        yearPicker.result + '-' + monthPicker.result + '-' + dayPicker.result;
+                }
+                document.querySelector('.mask_layer').style.display = 'none';
+                // 所有dom_hide隐藏
+                var dom_hide = document.querySelectorAll('.dom_hide');
+                for (let i = 0; i < dom_hide.length; i++) {
+                    dom_hide[i].style.display = 'none';
                 }
             });
         }
-        // 时分确定按钮执行的函数体
-        function hour_minute() {
-            var hour_box_scrollTop = document.querySelector('.hour_box').scrollTop;
-            var minute_box_scrollTop = document.querySelector('.minute_box').scrollTop;
 
-            // 根据滚动条的位置获取时间
-            if (
-                (hour_box_scrollTop / item_scrollHeight) % 1 == 0 &&
-                (minute_box_scrollTop / item_scrollHeight) % 1 == 0
-            ) {
-                hour_txt =
-                    document.querySelector('.hour_box').childNodes[hour_box_scrollTop / item_scrollHeight].innerHTML;
-                minute_txt =
-                    document.querySelector('.minute_box').childNodes[minute_box_scrollTop / item_scrollHeight]
-                        .innerHTML;
-                document.querySelector('.mark').innerHTML = hour_txt + ':' + minute_txt;
-                document.querySelector('.mask_layer').style.display = 'none';
-                document.querySelector('.dom_hide').style.display = 'none';
-            }
-        }
-
-        // 所有点击取消关闭时间选择器
+        // 取消按钮
         var cancel = document.querySelectorAll('.Cancel');
         for (let i = 0; i < cancel.length; i++) {
             cancel[i].addEventListener('click', function (e) {
                 document.querySelector('.mask_layer').style.display = 'none';
-                e.target.parentNode.parentNode.style.display = 'none';
+                // 所有dom_hide隐藏
+                var dom_hide = document.querySelectorAll('.dom_hide');
+                for (let i = 0; i < dom_hide.length; i++) {
+                    dom_hide[i].style.display = 'none';
+                }
             });
         }
-        // *****时分选择器*****
 
         // 按钮点击事件
         var choose_btn = document.querySelectorAll('.choose_btn');
@@ -395,9 +498,6 @@
                 choose = e.target.dataset.choose;
                 document.querySelector('.mask_layer').style.display = 'block';
                 document.querySelector('.time_box' + e.target.dataset.choose).style.display = 'block';
-                // item_scrollHeight = Math.round(
-                //     document.querySelector('.time_box' + e.target.dataset.choose).querySelector('.item').clientHeight
-                // );
             });
         }
     </script>
