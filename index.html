@@ -231,6 +231,36 @@
           ***************
         */
 
+        // 判断是否为手机浏览器
+        var isMobile = {
+            Android: function () {
+                return navigator.userAgent.match(/Android/i);
+            },
+            BlackBerry: function () {
+                return navigator.userAgent.match(/BlackBerry/i);
+            },
+            iOS: function () {
+                return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+            },
+            Opera: function () {
+                return navigator.userAgent.match(/Opera Mini/i);
+            },
+            Windows: function () {
+                return navigator.userAgent.match(/IEMobile/i);
+            },
+            any: function () {
+                return (
+                    isMobile.Android() ||
+                    isMobile.BlackBerry() ||
+                    isMobile.iOS() ||
+                    isMobile.Opera() ||
+                    isMobile.Windows()
+                );
+            },
+        };
+
+        console.log(isMobile.any());
+
         // 获取当前时间
         function getNowTime() {
             var now_time = new Date();
@@ -369,6 +399,7 @@
                     document.querySelector('.time_box' + e.target.dataset.choose).querySelector('.item').clientHeight
                 );
                 alert(item_scrollHeight);
+                alert(document.querySelector('.hour_box').clientHeight);
             });
         }
     </script>
