@@ -237,18 +237,22 @@
         var hour_box = document.querySelector('.hour_box');
         var minute_box = document.querySelector('.minute_box');
 
+        var item_scrollHeight = 30;
+        document.querySelector('.hour_box_item').clientHeight;
+
         function DomScroll(Dom) {
             Dom.addEventListener('scroll', function (e) {
+                item_scrollHeight = document.querySelector('.hour_box_item').clientHeight;
                 if (e.target.scrollTop > scrollTopStart) {
                     // 向下滚动
                     scrollTopStart = e.target.scrollTop;
-                    if (e.target.scrollTop % 30 != 0) {
+                    if (e.target.scrollTop % item_scrollHeight != 0) {
                         e.target.scrollTop++;
                     }
                 } else {
                     // 向上滚动
                     scrollTopStart = e.target.scrollTop;
-                    if (e.target.scrollTop % 30 != 0) {
+                    if (e.target.scrollTop % item_scrollHeight != 0) {
                         e.target.scrollTop--;
                     }
                 }
@@ -264,10 +268,18 @@
         sure.addEventListener('click', function () {
             var hour_box_scrollTop = document.querySelector('.hour_box').scrollTop;
             var minute_box_scrollTop = document.querySelector('.minute_box').scrollTop;
+            item_scrollHeight = document.querySelector('.hour_box_item').clientHeight;
+
             // 根据滚动条的位置获取时间
-            if ((hour_box_scrollTop / 30) % 1 == 0 && (minute_box_scrollTop / 30) % 1 == 0) {
-                hour_txt = document.querySelector('.hour_box').childNodes[hour_box_scrollTop / 30].innerHTML;
-                minute_txt = document.querySelector('.minute_box').childNodes[minute_box_scrollTop / 30].innerHTML;
+            if (
+                (hour_box_scrollTop / item_scrollHeight) % 1 == 0 &&
+                (minute_box_scrollTop / item_scrollHeight) % 1 == 0
+            ) {
+                hour_txt =
+                    document.querySelector('.hour_box').childNodes[hour_box_scrollTop / item_scrollHeight].innerHTML;
+                minute_txt =
+                    document.querySelector('.minute_box').childNodes[minute_box_scrollTop / item_scrollHeight]
+                        .innerHTML;
                 document.querySelector('.mark').innerHTML = hour_txt + ':' + minute_txt;
                 document.querySelector('.mask_layer').style.display = 'none';
                 document.querySelector('.dom_hide').style.display = 'none';
