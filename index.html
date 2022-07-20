@@ -66,7 +66,8 @@
                 transition: all 0.3s ease-in-out;
             }
 
-            .time_box1 {
+            .time_box1,
+            .time_box2 {
                 display: none;
                 width: 80%;
                 border-radius: 10px;
@@ -106,7 +107,8 @@
                 background-color: rgba(179, 179, 179, 0.1);
             }
 
-            .time_box1_main {
+            .time_box1_main,
+            .time_box2_main {
                 width: 100%;
                 display: flex;
                 padding: 12px 0;
@@ -167,6 +169,8 @@
                 </div>
                 <!-- 时分选择器 -->
                 <div class="choose_btn" data-choose="1">时分选择器</div>
+                <!-- 年月日选择器 -->
+                <div class="choose_btn" data-choose="2">年月日选择器</div>
             </div>
             <!-- 遮罩层 -->
             <div class="mask_layer"></div>
@@ -188,14 +192,32 @@
                 </div>
             </div>
             <!-- 年月日选择器 -->
+            <div class="time_box2 dom_hide">
+                <div class="time_box2_main">
+                    <!-- 年 -->
+                    <div class="year_box" data-time="year"></div>
+                    <!-- 月 -->
+                    <div class="moon_box" data-time="moon"></div>
+                    <!-- 日 -->
+                    <div class="day_box" data-time="day"></div>
+                </div>
+                <!-- 选择线 -->
+                <p class="select_line"></p>
+                <!-- 按钮 -->
+                <div class="time_box1_btn">
+                    <div class="Cancel">取消</div>
+                    <div class="line"></div>
+                    <div class="Sure">确定</div>
+                </div>
+            </div>
         </div>
     </body>
     <script>
-        /* 
-    ***************
-      作者：谢佳毅
-    ***************
-  */
+        /*
+          ***************
+            作者：谢佳毅
+          ***************
+        */
 
         // 获取当前时间
         function getNowTime() {
@@ -264,8 +286,17 @@
         // 点击确定获取时间
         var hour_txt = '00';
         var minute_txt = '00';
-        var sure = document.querySelector('.Sure');
-        sure.addEventListener('click', function () {
+        var sure = document.querySelectorAll('.Sure');
+        var choose = '1';
+        for (let i = 0; i < sure.length; i++) {
+            sure[i].addEventListener('click', function (e) {
+                if (choose == 1) {
+                    hour_minute();
+                }
+            });
+        }
+
+        function hour_minute() {
             var hour_box_scrollTop = document.querySelector('.hour_box').scrollTop;
             var minute_box_scrollTop = document.querySelector('.minute_box').scrollTop;
             item_scrollHeight = document.querySelector('.hour_box_item').clientHeight;
@@ -284,22 +315,26 @@
                 document.querySelector('.mask_layer').style.display = 'none';
                 document.querySelector('.dom_hide').style.display = 'none';
             }
-        });
+        }
+
         // 点击取消关闭时间选择器
-        var cancel = document.querySelector('.Cancel');
-        cancel.addEventListener('click', function () {
-            document.querySelector('.mask_layer').style.display = 'none';
-            document.querySelector('.dom_hide').style.display = 'none';
-        });
+        var cancel = document.querySelectorAll('.Cancel');
+        for (let i = 0; i < cancel.length; i++) {
+            cancel[i].addEventListener('click', function (e) {
+                document.querySelector('.mask_layer').style.display = 'none';
+                e.target.parentNode.parentNode.style.display = 'none';
+            });
+        }
         // *****时分选择器*****
 
         // 按钮点击事件
-        var choose_btn = document.querySelector('.choose_btn');
-        choose_btn.addEventListener('click', function (e) {
-            document.querySelector('.mask_layer').style.display = 'block';
-            if (e.target.dataset.choose == 1) {
-                document.querySelector('.time_box1').style.display = 'block';
-            }
-        });
+        var choose_btn = document.querySelectorAll('.choose_btn');
+        for (let i = 0; i < choose_btn.length; i++) {
+            choose_btn[i].addEventListener('click', function (e) {
+                choose = e.target.dataset.choose;
+                document.querySelector('.mask_layer').style.display = 'block';
+                document.querySelector('.time_box' + e.target.dataset.choose).style.display = 'block';
+            });
+        }
     </script>
 </html>
