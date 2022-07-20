@@ -131,7 +131,7 @@
                 right: 0;
                 z-index: 1;
                 height: 59px;
-                background: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3));
+                background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
             }
 
             .picker-column::after {
@@ -142,7 +142,7 @@
                 right: 0;
                 z-index: 1;
                 height: 59px;
-                background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.6));
+                background: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.9));
             }
 
             .item {
@@ -253,6 +253,22 @@
           ***************
         */
 
+        // 获取当前时间
+        function getNowTime() {
+            var now_time = new Date();
+            var now_year = now_time.getFullYear();
+            var now_month = ('0' + (now_time.getMonth() + 1)).slice(-2);
+            var now_day = ('0' + now_time.getDate()).slice(-2);
+            var now_hour = ('0' + now_time.getHours()).slice(-2);
+            var now_minute = ('0' + now_time.getMinutes()).slice(-2);
+            var now_second = ('0' + now_time.getSeconds()).slice(-2);
+            var now_time_str =
+                now_year + '-' + now_month + '-' + now_day + ' ' + now_hour + ':' + now_minute + ':' + now_second;
+            document.querySelector('.now_time').innerHTML = now_time_str;
+        }
+        getNowTime();
+        setInterval(getNowTime, 1000);
+
         // 判断是否为手机浏览器
         var isMobile = {
             Android: function () {
@@ -280,7 +296,9 @@
                 );
             },
         };
+        console.log(isMobile.any());
 
+        // Picker
         class Picker {
             constructor(options) {
                 this.options = Object.assign({}, options);
@@ -377,68 +395,60 @@
                 let i = Math.round(this.translateY / this.itemHeight);
                 this.translateY = i * this.itemHeight;
                 this.result = this.options.list[2 - this.translateY / this.itemHeight];
-                days = createList(1, getDays(Number(yearPicker.result), Number(monthPicker.result)));
+                // this.a();
+            }
+            // a() {
+            //     now_time();
+            //     this.diffY = 180;
+            // }
+        }
+
+        // 日历判断
+        function now_time() {
+            var now_time = new Date();
+            var now_year = now_time.getFullYear();
+            var now_month = now_time.getMonth() + 1;
+            var now_day = now_time.getDate();
+            if (yearPicker.result == now_year) {
+                let html = '';
+                for (let i = 1; i <= now_month; i++) {
+                    html += '<div class="item">' + ('0' + i).slice(-2) + '</div>';
+                }
+                document.querySelector('.moon_box').querySelector('.picker-content').innerHTML = html;
+                days = createList(1, now_day);
                 dayPicker = new Picker({
                     pickerColumn: pickerColumns[4],
                     pickerContent: pickerContents[4],
                     list: days,
                 });
+            } else {
+                let html = '';
+                for (let i = 1; i <= 12; i++) {
+                    html += '<div class="item">' + ('0' + i).slice(-2) + '</div>';
+                }
+                document.querySelector('.moon_box').querySelector('.picker-content').innerHTML = html;
             }
+            days = createList(1, getDays(Number(yearPicker.result), Number(monthPicker.result)));
+            dayPicker = new Picker({
+                pickerColumn: pickerColumns[4],
+                pickerContent: pickerContents[4],
+                list: days,
+            });
         }
 
-        console.log(isMobile.any());
-
-        // 获取当前时间
-        function getNowTime() {
-            var now_time = new Date();
-            var now_year = now_time.getFullYear();
-            var now_month = ('0' + (now_time.getMonth() + 1)).slice(-2);
-            var now_day = ('0' + now_time.getDate()).slice(-2);
-            var now_hour = ('0' + now_time.getHours()).slice(-2);
-            var now_minute = ('0' + now_time.getMinutes()).slice(-2);
-            var now_second = ('0' + now_time.getSeconds()).slice(-2);
-            var now_time_str =
-                now_year + '-' + now_month + '-' + now_day + ' ' + now_hour + ':' + now_minute + ':' + now_second;
-            document.querySelector('.now_time').innerHTML = now_time_str;
+        // 调用方式
+        function createList(start, end) {
+            const list = [];
+            let j = 0;
+            for (i = start; i <= end; i++) {
+                list[j] = i < 10 ? '0' + i : '' + i;
+                if (j <= end) {
+                    j++;
+                }
+            }
+            return list;
         }
-        getNowTime();
-        setInterval(getNowTime, 1000);
 
-        // *****数据渲染*****
-        var start_year = 2000;
-        var end_year = 2022;
-        var hours = createList(0, 23),
-            minutes = createList(0, 59),
-            years = createList(start_year, end_year),
-            months = createList(1, 12),
-            days = createList(1, 31);
-        const pickerColumns = document.querySelectorAll('.picker-column');
-        const pickerContents = document.querySelectorAll('.picker-content');
-        const hourPicker = new Picker({
-            pickerColumn: pickerColumns[0],
-            pickerContent: pickerContents[0],
-            list: hours,
-        });
-        const minutePicker = new Picker({
-            pickerColumn: pickerColumns[1],
-            pickerContent: pickerContents[1],
-            list: minutes,
-        });
-        const yearPicker = new Picker({
-            pickerColumn: pickerColumns[2],
-            pickerContent: pickerContents[2],
-            list: years,
-        });
-        const monthPicker = new Picker({
-            pickerColumn: pickerColumns[3],
-            pickerContent: pickerContents[3],
-            list: months,
-        });
-        var dayPicker = new Picker({
-            pickerColumn: pickerColumns[4],
-            pickerContent: pickerContents[4],
-            list: days,
-        });
         // 判断start_year是否为闰年
         function isLeapYear(year) {
             return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -468,18 +478,41 @@
             }
         }
 
-        // 调用方式
-        function createList(start, end) {
-            const list = [];
-            let j = 0;
-            for (i = start; i <= end; i++) {
-                list[j] = i < 10 ? '0' + i : '' + i;
-                if (j <= end) {
-                    j++;
-                }
-            }
-            return list;
-        }
+        // *****数据渲染*****
+        var start_year = 2000;
+        var end_year = 2022;
+        var hours = createList(0, 23),
+            minutes = createList(0, 59),
+            years = createList(start_year, end_year),
+            months = createList(1, 12),
+            days = createList(1, 31);
+        const pickerColumns = document.querySelectorAll('.picker-column');
+        const pickerContents = document.querySelectorAll('.picker-content');
+        const hourPicker = new Picker({
+            pickerColumn: pickerColumns[0],
+            pickerContent: pickerContents[0],
+            list: hours,
+        });
+        const minutePicker = new Picker({
+            pickerColumn: pickerColumns[1],
+            pickerContent: pickerContents[1],
+            list: minutes,
+        });
+        const yearPicker = new Picker({
+            pickerColumn: pickerColumns[2],
+            pickerContent: pickerContents[2],
+            list: years,
+        });
+        var monthPicker = new Picker({
+            pickerColumn: pickerColumns[3],
+            pickerContent: pickerContents[3],
+            list: months,
+        });
+        var dayPicker = new Picker({
+            pickerColumn: pickerColumns[4],
+            pickerContent: pickerContents[4],
+            list: days,
+        });
 
         // 确定按钮
         var sure = document.querySelectorAll('.Sure');
