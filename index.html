@@ -317,25 +317,24 @@
         // 判断滚动条走向
         function DomScroll(Dom) {
             Dom.addEventListener('scroll', function (e) {
-                var e_t_scrollTop = e.target.scrollTop || e.target.pageYOffset;
-                if (e_t_scrollTop > scrollTopStart) {
+                if (e.target.scrollTop > scrollTopStart) {
                     // 向下滚动
-                    scrollTopStart = e_t_scrollTop;
-                    if (e_t_scrollTop % item_scrollHeight != 0) {
+                    scrollTopStart = e.target.scrollTop;
+                    if (e.target.scrollTop % item_scrollHeight != 0) {
                         e.target.scrollTop++;
                     }
                 } else {
                     // 向上滚动
-                    scrollTopStart = e_t_scrollTop;
-                    if (e_t_scrollTop % item_scrollHeight != 0) {
+                    scrollTopStart = e.target.scrollTop;
+                    if (e.target.scrollTop % item_scrollHeight != 0) {
                         e.target.scrollTop--;
                     }
                 }
                 // 判断滚动条是否停止滚动
                 clearTimeout(timer); // 每次滚动前 清除一次
-                start = e_t_scrollTop;
+                start = e.target.scrollTop;
                 timer = setTimeout(function () {
-                    end = e_t_scrollTop;
+                    end = e.target.scrollTop;
                     if (end == start) {
                         console.log('停止滚动了');
                     }
@@ -396,9 +395,9 @@
                 choose = e.target.dataset.choose;
                 document.querySelector('.mask_layer').style.display = 'block';
                 document.querySelector('.time_box' + e.target.dataset.choose).style.display = 'block';
-                item_scrollHeight = Math.round(
-                    document.querySelector('.time_box' + e.target.dataset.choose).querySelector('.item').clientHeight
-                );
+                // item_scrollHeight = Math.round(
+                //     document.querySelector('.time_box' + e.target.dataset.choose).querySelector('.item').clientHeight
+                // );
             });
         }
     </script>
