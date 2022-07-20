@@ -319,6 +319,7 @@
             Dom.addEventListener('scroll', function (e) {
                 if (e.target.scrollTop > scrollTopStart) {
                     // 向下滚动
+                    alert(e.target.scrollTop, item_scrollHeight);
                     scrollTopStart = e.target.scrollTop;
                     if (e.target.scrollTop % item_scrollHeight != 0) {
                         e.target.scrollTop++;
@@ -398,8 +399,6 @@
                 item_scrollHeight = Math.round(
                     document.querySelector('.time_box' + e.target.dataset.choose).querySelector('.item').clientHeight
                 );
-                alert(item_scrollHeight);
-                alert(document.querySelector('.hour_box').clientHeight);
             });
         }
     </script>
