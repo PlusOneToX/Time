@@ -395,45 +395,40 @@
                 let i = Math.round(this.translateY / this.itemHeight);
                 this.translateY = i * this.itemHeight;
                 this.result = this.options.list[2 - this.translateY / this.itemHeight];
-                // this.a();
-            }
-            // a() {
-            //     now_time();
-            //     this.diffY = 180;
-            // }
-        }
 
-        // 日历判断
-        function now_time() {
-            var now_time = new Date();
-            var now_year = now_time.getFullYear();
-            var now_month = now_time.getMonth() + 1;
-            var now_day = now_time.getDate();
-            if (yearPicker.result == now_year) {
-                let html = '';
-                for (let i = 1; i <= now_month; i++) {
-                    html += '<div class="item">' + ('0' + i).slice(-2) + '</div>';
+                var data_time = this.options.pickerColumn.dataset.time;
+                var now_time = new Date();
+                var now_year = now_time.getFullYear();
+                var now_month = now_time.getMonth() + 1;
+                var now_day = now_time.getDate();
+                console.log(data_time);
+                if (data_time == 'year') {
+                    if (yearPicker.result == now_year) {
+                        months = createList(1, now_month);
+                        monthPicker = new Picker({
+                            pickerColumn: pickerColumns[3],
+                            pickerContent: pickerContents[3],
+                            list: months,
+                        });
+                    }
                 }
-                document.querySelector('.moon_box').querySelector('.picker-content').innerHTML = html;
-                days = createList(1, now_day);
-                dayPicker = new Picker({
-                    pickerColumn: pickerColumns[4],
-                    pickerContent: pickerContents[4],
-                    list: days,
-                });
-            } else {
-                let html = '';
-                for (let i = 1; i <= 12; i++) {
-                    html += '<div class="item">' + ('0' + i).slice(-2) + '</div>';
+                if (data_time == 'moon') {
+                    days = createList(1, getDays(Number(yearPicker.result), Number(monthPicker.result)));
+                    dayPicker = new Picker({
+                        pickerColumn: pickerColumns[4],
+                        pickerContent: pickerContents[4],
+                        list: days,
+                    });
+                    if (monthPicker.result == now_month) {
+                        days = createList(1, now_day);
+                        dayPicker = new Picker({
+                            pickerColumn: pickerColumns[4],
+                            pickerContent: pickerContents[4],
+                            list: days,
+                        });
+                    }
                 }
-                document.querySelector('.moon_box').querySelector('.picker-content').innerHTML = html;
             }
-            days = createList(1, getDays(Number(yearPicker.result), Number(monthPicker.result)));
-            dayPicker = new Picker({
-                pickerColumn: pickerColumns[4],
-                pickerContent: pickerContents[4],
-                list: days,
-            });
         }
 
         // 调用方式
