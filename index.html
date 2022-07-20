@@ -317,25 +317,25 @@
         // 判断滚动条走向
         function DomScroll(Dom) {
             Dom.addEventListener('scroll', function (e) {
-                if (e.target.scrollTop > scrollTopStart) {
+                var e_t_scrollTop = e.target.scrollTop || e.target.pageYOffset;
+                if (e_t_scrollTop > scrollTopStart) {
                     // 向下滚动
-                    alert(e.target.scrollTop, item_scrollHeight);
-                    scrollTopStart = e.target.scrollTop;
-                    if (e.target.scrollTop % item_scrollHeight != 0) {
+                    scrollTopStart = e_t_scrollTop;
+                    if (e_t_scrollTop % item_scrollHeight != 0) {
                         e.target.scrollTop++;
                     }
                 } else {
                     // 向上滚动
-                    scrollTopStart = e.target.scrollTop;
-                    if (e.target.scrollTop % item_scrollHeight != 0) {
+                    scrollTopStart = e_t_scrollTop;
+                    if (e_t_scrollTop % item_scrollHeight != 0) {
                         e.target.scrollTop--;
                     }
                 }
                 // 判断滚动条是否停止滚动
                 clearTimeout(timer); // 每次滚动前 清除一次
-                start = e.target.scrollTop;
+                start = e_t_scrollTop;
                 timer = setTimeout(function () {
-                    end = e.target.scrollTop;
+                    end = e_t_scrollTop;
                     if (end == start) {
                         console.log('停止滚动了');
                     }
