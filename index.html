@@ -223,11 +223,11 @@
         function getNowTime() {
             var now_time = new Date();
             var now_year = now_time.getFullYear();
-            var now_month = now_time.getMonth() + 1;
-            var now_day = now_time.getDate();
-            var now_hour = now_time.getHours();
-            var now_minute = now_time.getMinutes();
-            var now_second = now_time.getSeconds();
+            var now_month = ('0' + (now_time.getMonth() + 1)).slice(-2);
+            var now_day = ('0' + now_time.getDate()).slice(-2);
+            var now_hour = ('0' + now_time.getHours()).slice(-2);
+            var now_minute = ('0' + now_time.getMinutes()).slice(-2);
+            var now_second = ('0' + now_time.getSeconds()).slice(-2);
             var now_time_str =
                 now_year + '-' + now_month + '-' + now_day + ' ' + now_hour + ':' + now_minute + ':' + now_second;
             document.querySelector('.now_time').innerHTML = now_time_str;
@@ -251,6 +251,13 @@
                 minute_box_html += '<div class="minute_box_item">' + ('0' + i).slice(-2) + '</div>';
             }
             minute_box.innerHTML = minute_box_html;
+            // 年份渲染
+            var year_box = document.querySelector('.year_box');
+            var year_box_html = '';
+            for (let i = 1970; i <= 2099; i++) {
+                year_box_html += '<div class="year_box_item">' + i + '</div>';
+            }
+            year_box.innerHTML = year_box_html;
         }
         DomRender();
 
@@ -258,13 +265,13 @@
         var scrollTopStart = 0;
         var hour_box = document.querySelector('.hour_box');
         var minute_box = document.querySelector('.minute_box');
-
         var item_scrollHeight = 30;
-        document.querySelector('.hour_box_item').clientHeight;
+        item_scrollHeight = Math.round(document.querySelector('.hour_box_item').clientHeight);
 
+        // 判断滚动条走向
         function DomScroll(Dom) {
             Dom.addEventListener('scroll', function (e) {
-                item_scrollHeight = document.querySelector('.hour_box_item').clientHeight;
+                item_scrollHeight = Math.round(document.querySelector('.hour_box_item').clientHeight);
                 if (e.target.scrollTop > scrollTopStart) {
                     // 向下滚动
                     scrollTopStart = e.target.scrollTop;
@@ -295,11 +302,11 @@
                 }
             });
         }
-
+        // 时分确定按钮执行的函数体
         function hour_minute() {
             var hour_box_scrollTop = document.querySelector('.hour_box').scrollTop;
             var minute_box_scrollTop = document.querySelector('.minute_box').scrollTop;
-            item_scrollHeight = document.querySelector('.hour_box_item').clientHeight;
+            item_scrollHeight = Math.round(document.querySelector('.hour_box_item').clientHeight);
 
             // 根据滚动条的位置获取时间
             if (
@@ -317,7 +324,7 @@
             }
         }
 
-        // 点击取消关闭时间选择器
+        // 所有点击取消关闭时间选择器
         var cancel = document.querySelectorAll('.Cancel');
         for (let i = 0; i < cancel.length; i++) {
             cancel[i].addEventListener('click', function (e) {
