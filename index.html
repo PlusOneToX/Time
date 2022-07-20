@@ -13,9 +13,9 @@
             }
 
             /* 隐藏滚动条 */
-            /* ::-webkit-scrollbar {
+            ::-webkit-scrollbar {
                 display: none;
-            } */
+            }
 
             .time_main {
                 width: 100%;
@@ -115,11 +115,51 @@
             }
 
             .picker-column {
+                position: relative;
                 text-align: center;
                 height: 150px;
                 overflow: hidden;
                 touch-action: none;
                 user-select: none;
+            }
+
+            .picker-column::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1;
+                height: 59px;
+                background: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3));
+            }
+
+            .picker-column::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 1;
+                height: 59px;
+                background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.6));
+            }
+
+            .item {
+                font-size: 14px;
+                line-height: 30px;
+            }
+
+            .select_line {
+                position: absolute;
+                top: 71px;
+                height: 28px;
+                width: 100%;
+                margin: 0;
+                z-index: -1;
+                border: 1px solid rgba(179, 179, 179, 0.2);
+                border-left: none;
+                border-right: none;
             }
 
             /* 时分样式 */
@@ -136,23 +176,6 @@
                 width: 33%;
             }
             /* 年月日样式 */
-
-            .item,
-            .item {
-                font-size: 14px;
-                line-height: 30px;
-            }
-            .select_line {
-                position: absolute;
-                top: 71px;
-                height: 28px;
-                width: 100%;
-                margin: 0;
-                z-index: -1;
-                border: 1px solid rgba(179, 179, 179, 0.2);
-                border-left: none;
-                border-right: none;
-            }
         </style>
     </head>
 
