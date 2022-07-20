@@ -123,23 +123,35 @@
                 overflow: hidden;
                 overflow-y: auto;
             }
+            /* 时分样式 */
 
-            .hour_box_item,
-            .minute_box_item {
+            /* 年月日样式 */
+            .year_box,
+            .moon_box,
+            .day_box {
+                width: 33%;
+                text-align: center;
+                height: 150px;
+                overflow: hidden;
+                overflow-y: auto;
+            }
+            /* 年月日样式 */
+
+            .item,
+            .item {
                 font-size: 14px;
                 line-height: 30px;
             }
 
-            .hour_box_item:first-child,
-            .minute_box_item:first-child {
+            .item:first-child,
+            .item:first-child {
                 margin-top: 60px;
             }
 
-            .hour_box_item:last-child,
-            .minute_box_item:last-child {
+            .item:last-child,
+            .item:last-child {
                 margin-bottom: 60px;
             }
-            /* 时分样式 */
 
             .select_line {
                 position: absolute;
@@ -241,21 +253,21 @@
             var hour_box = document.querySelector('.hour_box');
             var hour_box_html = '';
             for (let i = 0; i < 24; i++) {
-                hour_box_html += '<div class="hour_box_item">' + ('0' + i).slice(-2) + '</div>';
+                hour_box_html += '<div class="item">' + ('0' + i).slice(-2) + '</div>';
             }
             hour_box.innerHTML = hour_box_html;
             // 分钟渲染
             var minute_box = document.querySelector('.minute_box');
             var minute_box_html = '';
             for (let i = 0; i < 60; i++) {
-                minute_box_html += '<div class="minute_box_item">' + ('0' + i).slice(-2) + '</div>';
+                minute_box_html += '<div class="item">' + ('0' + i).slice(-2) + '</div>';
             }
             minute_box.innerHTML = minute_box_html;
             // 年份渲染
             var year_box = document.querySelector('.year_box');
             var year_box_html = '';
             for (let i = 1970; i <= 2099; i++) {
-                year_box_html += '<div class="year_box_item">' + i + '</div>';
+                year_box_html += '<div class="item">' + i + '</div>';
             }
             year_box.innerHTML = year_box_html;
         }
@@ -265,13 +277,16 @@
         var scrollTopStart = 0;
         var hour_box = document.querySelector('.hour_box');
         var minute_box = document.querySelector('.minute_box');
+        var year_box = document.querySelector('.year_box');
         var item_scrollHeight = 30;
-        item_scrollHeight = Math.round(document.querySelector('.hour_box_item').clientHeight);
+        // 对比时间的值
+        var start = 0;
+        var end = 0;
+        var timer = null;
 
         // 判断滚动条走向
         function DomScroll(Dom) {
             Dom.addEventListener('scroll', function (e) {
-                item_scrollHeight = Math.round(document.querySelector('.hour_box_item').clientHeight);
                 if (e.target.scrollTop > scrollTopStart) {
                     // 向下滚动
                     scrollTopStart = e.target.scrollTop;
@@ -285,10 +300,20 @@
                         e.target.scrollTop--;
                     }
                 }
+                // 判断滚动条是否停止滚动
+                clearTimeout(timer); // 每次滚动前 清除一次
+                start = e.target.scrollTop;
+                timer = setTimeout(function () {
+                    end = e.target.scrollTop;
+                    if (end == start) {
+                        console.log('停止滚动了');
+                    }
+                }, 500);
             });
         }
         DomScroll(hour_box);
         DomScroll(minute_box);
+        DomScroll(year_box);
 
         // 点击确定获取时间
         var hour_txt = '00';
@@ -306,7 +331,6 @@
         function hour_minute() {
             var hour_box_scrollTop = document.querySelector('.hour_box').scrollTop;
             var minute_box_scrollTop = document.querySelector('.minute_box').scrollTop;
-            item_scrollHeight = Math.round(document.querySelector('.hour_box_item').clientHeight);
 
             // 根据滚动条的位置获取时间
             if (
@@ -341,6 +365,10 @@
                 choose = e.target.dataset.choose;
                 document.querySelector('.mask_layer').style.display = 'block';
                 document.querySelector('.time_box' + e.target.dataset.choose).style.display = 'block';
+                item_scrollHeight = Math.round(
+                    document.querySelector('.time_box' + e.target.dataset.choose).querySelector('.item').clientHeight
+                );
+                alert(item_scrollHeight);
             });
         }
     </script>
