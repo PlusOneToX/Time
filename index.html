@@ -1,556 +1,907 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" href="./time.png" type="image/x-icon" />
-        <title>时间选择器</title>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-            }
 
-            /* 隐藏滚动条 */
-            ::-webkit-scrollbar {
-                display: none;
-            }
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./images/time.png" type="image/x-icon" />
+    <title>时间选择器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
 
-            .time_main {
-                width: 100%;
-                height: 100%;
-                background-color: #fff;
-            }
+        /* 隐藏滚动条 */
+        ::-webkit-scrollbar {
+            display: none;
+        }
 
-            .case {
-                padding: 16px;
-            }
+        .time_main {
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+        }
 
-            .choose_btn {
-                display: inline-block;
-                padding: 0 16px;
-                height: 40px;
-                margin: 0 auto;
-                line-height: 40px;
-                text-align: center;
-                background-color: #007bff;
-                color: #fff;
-                border-radius: 10px;
-                font-weight: 400;
-            }
+        .case {
+            padding: 16px;
+        }
 
-            .cs_time {
-                padding: 16px;
-                background-color: #febf32;
-                border-radius: 0 20px 0 20px;
-                color: #fff;
-                margin-bottom: 16px;
-            }
+        .choose_btn_box {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-            .mark,
-            .now_time {
-                font-weight: bold;
-                margin-left: 16px;
-            }
+        .choose_btn {
+            display: inline-block;
+            padding: 0 16px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            color: #fff;
+            border-radius: 10px;
+            font-weight: 400;
+            margin-bottom: 16px;
+        }
 
-            .mask_layer {
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-                background-color: rgba(0, 0, 0, 0.5);
-                z-index: 998;
-                display: none;
-                transition: all 0.3s ease-in-out;
-            }
+        .cs_time {
+            padding: 16px;
+            background-color: #febf32;
+            border-radius: 0 20px 0 20px;
+            color: #fff;
+            margin-bottom: 16px;
+        }
 
-            .time_box1,
-            .time_box2 {
-                display: none;
-                width: 80%;
-                border-radius: 10px;
-                background-color: #fff;
-                z-index: 999;
-                /* 屏幕居中 */
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-            }
+        .mark,
+        .now_time {
+            font-weight: bold;
+            margin-left: 16px;
+        }
 
-            .time_box1_btn {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-                border-top: 1px solid rgba(179, 179, 179, 0.1);
-            }
+        .mask_layer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
+            transition: all 0.3s ease-in-out;
+        }
 
-            .Sure,
-            .Cancel {
-                width: 50%;
-                height: 48px;
-                line-height: 48px;
-                font-size: 16px;
-                text-align: center;
-                box-sizing: border-box;
-            }
+        .time_box {
+            display: none;
+            width: 80%;
+            border-radius: 10px;
+            background-color: #fff;
+            z-index: 999;
+            /* 屏幕居中 */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
 
-            .Sure {
-                color: blue;
-            }
+        .time_box_btn {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(179, 179, 179, 0.1);
+        }
 
-            .line {
-                width: 1px;
-                height: auto;
-                background-color: rgba(179, 179, 179, 0.1);
-            }
+        .time_box_btn .Sure,
+        .time_box_btn .Cancel {
+            width: 50%;
+            height: 48px;
+            line-height: 48px;
+            font-size: 16px;
+            text-align: center;
+            box-sizing: border-box;
+        }
 
-            .time_box1_main,
-            .time_box2_main {
-                width: 100%;
-                display: flex;
-                padding: 12px 0;
-            }
+        .time_box_btn .Sure {
+            color: blue;
+        }
 
-            .picker-column {
-                position: relative;
-                text-align: center;
-                height: 150px;
-                overflow: hidden;
-                touch-action: none;
-                user-select: none;
-            }
+        .time_box_btn .line {
+            width: 1px;
+            height: auto;
+            background-color: rgba(179, 179, 179, 0.1);
+        }
 
-            .picker-column::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                z-index: 1;
-                height: 59px;
-                background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
-            }
+        .time_box_main {
+            width: 100%;
+            display: flex;
+            padding: 12px 0;
+        }
 
-            .picker-column::after {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: 1;
-                height: 59px;
-                background: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.9));
-            }
+        .picker-column {
+            position: relative;
+            text-align: center;
+            height: 150px;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+        }
 
-            .item {
-                font-size: 14px;
-                line-height: 30px;
-            }
+        .picker-column::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            height: 59px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+        }
 
-            .select_line {
-                position: absolute;
-                top: 71px;
-                height: 28px;
-                width: 100%;
-                margin: 0;
-                z-index: -1;
-                border: 1px solid rgba(179, 179, 179, 0.2);
-                border-left: none;
-                border-right: none;
-            }
+        .picker-column::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            height: 59px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.9));
+        }
 
-            /* 时分样式 */
-            .hour_box,
-            .minute_box {
-                width: 50%;
-            }
-            /* 时分样式 */
+        .item {
+            font-size: 14px;
+            line-height: 30px;
+        }
 
-            /* 年月日样式 */
-            .year_box,
-            .moon_box,
-            .day_box {
-                width: 33%;
-            }
-            /* 年月日样式 */
-        </style>
-    </head>
+        .select_line {
+            position: absolute;
+            top: 71px;
+            height: 28px;
+            width: 100%;
+            margin: 0;
+            z-index: -1;
+            border: 1px solid rgba(179, 179, 179, 0.2);
+            border-left: none;
+            border-right: none;
+        }
 
-    <body>
-        <div class="time_main">
-            <!-- 案例 -->
-            <div class="case">
-                <div class="cs_time" style="background-color: #8675f1">
-                    当前时间是:
-                    <span class="now_time">--</span>
-                </div>
-                <div class="cs_time">
-                    当前选择的时间是:
-                    <span class="mark">--</span>
-                </div>
+        /* 时分样式 */
+        .hour_box,
+        .minute_box {
+            width: 50%;
+        }
+
+        /* 时分样式 */
+
+        /* 年月日样式 */
+        .year_box,
+        .moon_box,
+        .day_box {
+            width: 33%;
+        }
+
+        /* 年月日样式 */
+
+        /* 日历样式 */
+        .calendar_box {
+            width: 100%;
+        }
+
+        .calendar_top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            margin-bottom: 8px;
+        }
+
+        .calendar_top img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .calendar_top_img_box {
+            display: flex;
+            align-items: center;
+        }
+
+        .calendar_top_right_png {
+            transform: rotate(180deg);
+        }
+
+        .calendar_time {
+            font-size: 16px;
+            line-height: 20px;
+            font-weight: 700;
+            color: #000;
+            cursor: pointer;
+        }
+
+        .last_month {
+            margin-left: 16px;
+        }
+
+        .next_month {
+            margin-right: 16px;
+        }
+
+        .calendar_week {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .calendar_week span {
+            font-size: 12px;
+            line-height: 16px;
+            font-weight: 700;
+            width: calc(100% / 7);
+            text-align: center;
+        }
+
+        .calendar_week span:nth-child(n + 6),
+        .calendar_item_week {
+            color: red;
+        }
+
+        .calendar_day {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .calendar_item {
+            width: calc(100% / 7);
+            height: 20px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid transparent;
+        }
+
+        .calenda_other-month {
+            opacity: 0.4;
+        }
+
+        .calendar_item_today {
+            color: #fff;
+            background-color: #2196f3;
+        }
+
+        .calendar_item_active {
+            border-color: #363a3e;
+        }
+
+        .calendar_btn_box {
+            padding: 0 16px;
+            margin-top: 8px;
+        }
+
+        .calendar_btn_box2 {
+            display: flex;
+            align-items: center;
+            float: right;
+        }
+
+        .calendar_btn_today {
+            background-color: #f7c029;
+            color: #fff;
+        }
+
+        .calendar_btn {
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            font-size: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 0 16px;
+        }
+
+        .calendar_btn_close {
+            background-color: transparent;
+            color: #000;
+            border: 1px solid #eee;
+            margin-right: 16px;
+        }
+
+        .calendar_btn_now {
+            background-color: #2196f3;
+            color: #fff;
+            margin-right: 16px;
+        }
+
+        .calendar_btn_sure {
+            background-color: #1dbb79;
+            color: #fff;
+        }
+
+        /* 日历样式 */
+    </style>
+</head>
+
+<body>
+    <div class="time_main">
+        <!-- 案例 -->
+        <div class="case">
+            <div class="cs_time" style="background-color: #8675f1">
+                当前时间是:
+                <span class="now_time">--</span>
+            </div>
+            <div class="cs_time">
+                当前选择的时间是:
+                <span class="mark">--</span>
+            </div>
+            <!-- 按钮 -->
+            <div class="choose_btn_box">
                 <!-- 时分选择器 -->
                 <div class="choose_btn" data-choose="1">时分选择器</div>
                 <!-- 年月日选择器 -->
                 <div class="choose_btn" data-choose="2">年月日选择器</div>
+                <!-- 日历选择器 -->
+                <div class="choose_btn" data-choose="3">日历选择器</div>
             </div>
-            <!-- 遮罩层 -->
-            <div class="mask_layer"></div>
-            <!-- 时间选择器 -->
-            <div class="time_box1 dom_hide">
-                <div class="time_box1_main">
-                    <!-- 时钟 -->
-                    <div class="hour_box picker-column" data-time="hour">
-                        <div class="picker-content"></div>
-                    </div>
-                    <!-- 分钟 -->
-                    <div class="minute_box picker-column" data-time="minute">
-                        <div class="picker-content"></div>
-                    </div>
+        </div>
+        <!-- 遮罩层 -->
+        <div class="mask_layer"></div>
+        <!-- 时间选择器 -->
+        <div class="time_box">
+            <div class="time_box_main">
+                <!-- 时钟 -->
+                <div class="hour_box picker-column" data-time="hour">
+                    <div class="picker-content"></div>
                 </div>
-                <!-- 选择线 -->
-                <p class="select_line"></p>
-                <!-- 按钮 -->
-                <div class="time_box1_btn">
-                    <div class="Cancel">取消</div>
-                    <div class="line"></div>
-                    <div class="Sure">确定</div>
+                <!-- 分钟 -->
+                <div class="minute_box picker-column" data-time="minute">
+                    <div class="picker-content"></div>
                 </div>
             </div>
-            <!-- 年月日选择器 -->
-            <div class="time_box2 dom_hide">
-                <div class="time_box2_main">
-                    <!-- 年 -->
-                    <div class="year_box picker-column" data-time="year">
-                        <div class="picker-content"></div>
-                    </div>
-                    <!-- 月 -->
-                    <div class="moon_box picker-column" data-time="moon">
-                        <div class="picker-content"></div>
-                    </div>
-                    <!-- 日 -->
-                    <div class="day_box picker-column" data-time="day">
-                        <div class="picker-content"></div>
-                    </div>
+            <!-- 选择线 -->
+            <p class="select_line"></p>
+            <!-- 按钮 -->
+            <div class="time_box_btn">
+                <div class="Cancel">取消</div>
+                <div class="line"></div>
+                <div class="Sure">确定</div>
+            </div>
+        </div>
+        <!-- 年月日选择器 -->
+        <div class="time_box">
+            <div class="time_box_main">
+                <!-- 年 -->
+                <div class="year_box picker-column" data-time="year">
+                    <div class="picker-content"></div>
                 </div>
-                <!-- 选择线 -->
-                <p class="select_line"></p>
-                <!-- 按钮 -->
-                <div class="time_box1_btn">
-                    <div class="Cancel">取消</div>
-                    <div class="line"></div>
-                    <div class="Sure">确定</div>
+                <!-- 月 -->
+                <div class="moon_box picker-column" data-time="moon">
+                    <div class="picker-content"></div>
+                </div>
+                <!-- 日 -->
+                <div class="day_box picker-column" data-time="day">
+                    <div class="picker-content"></div>
+                </div>
+            </div>
+            <!-- 选择线 -->
+            <p class="select_line"></p>
+            <!-- 按钮 -->
+            <div class="time_box_btn">
+                <div class="Cancel">取消</div>
+                <div class="line"></div>
+                <div class="Sure">确定</div>
+            </div>
+        </div>
+        <!-- 日历选择器 -->
+        <div class="time_box">
+            <div class="time_box_main">
+                <!-- 日历 -->
+                <div class="calendar_box" data-time="calendar">
+                    <div class="calendar_top">
+                        <div class="calendar_top_img_box">
+                            <img class="last_year" src="./images/arrow_1.png" alt="" srcset="" />
+                            <img class="last_month" src="./images/arrow_2.png" alt="" srcset="" />
+                        </div>
+                        <div class="calendar_time">
+                            <span class="calendar_year">----</span>
+                            <span>-</span>
+                            <span class="calendar_month">--</span>
+                        </div>
+                        <div class="calendar_top_img_box">
+                            <img class="next_month calendar_top_right_png" src="./images/arrow_2.png" alt=""
+                                srcset="" />
+                            <img class="next_year calendar_top_right_png" src="./images/arrow_1.png" alt="" srcset="" />
+                        </div>
+                    </div>
+                    <div class="calendar_main">
+                        <div class="calendar_week">
+                            <span>一</span>
+                            <span>二</span>
+                            <span>三</span>
+                            <span>四</span>
+                            <span>五</span>
+                            <span>六</span>
+                            <span>日</span>
+                        </div>
+                        <div class="calendar_day"></div>
+                    </div>
+                    <!-- 按钮 -->
+                    <div class="calendar_btn_box">
+                        <div class="calendar_btn calendar_btn_today" style="display: none;">回到今天</div>
+                        <div class="calendar_btn_box2">
+                            <div class="calendar_btn calendar_btn_close Cancel">取消</div>
+                            <div class="calendar_btn calendar_btn_now">现在</div>
+                            <div class="calendar_btn calendar_btn_sure">确定</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </body>
-    <script>
-        /*
+    </div>
+</body>
+
+<script>
+    /*
           ***************
             作者：谢佳毅
           ***************
         */
 
-        // 获取当前时间
-        function getNowTime() {
-            var now_time = new Date();
-            var now_year = now_time.getFullYear();
-            var now_month = ('0' + (now_time.getMonth() + 1)).slice(-2);
-            var now_day = ('0' + now_time.getDate()).slice(-2);
-            var now_hour = ('0' + now_time.getHours()).slice(-2);
-            var now_minute = ('0' + now_time.getMinutes()).slice(-2);
-            var now_second = ('0' + now_time.getSeconds()).slice(-2);
-            var now_time_str =
-                now_year + '-' + now_month + '-' + now_day + ' ' + now_hour + ':' + now_minute + ':' + now_second;
-            document.querySelector('.now_time').innerHTML = now_time_str;
+    // 获取当前时间
+    var now_time = new Date();
+    var now_year = now_time.getFullYear();
+    var now_month = ('0' + (now_time.getMonth() + 1)).slice(-2);
+    var now_day = ('0' + now_time.getDate()).slice(-2);
+    var now_hour = ('0' + now_time.getHours()).slice(-2);
+    var now_minute = ('0' + now_time.getMinutes()).slice(-2);
+    var now_second = ('0' + now_time.getSeconds()).slice(-2);
+    var active_time = ''; // 点击日历的时间
+    var now_time_select = ''; // 现在时间
+
+    function getNowTime() {
+        var now_time_str =
+            now_year + '-' + now_month + '-' + now_day + ' ' + now_hour + ':' + now_minute + ':' + now_second;
+        document.querySelector('.now_time').innerHTML = now_time_str;
+    }
+    getNowTime();
+    setInterval(getNowTime, 1000);
+
+    // 判断是否为手机浏览器
+    var isMobile = {
+        Android: function () {
+            return navigator.userAgent.match(/Android/i);
+        },
+        BlackBerry: function () {
+            return navigator.userAgent.match(/BlackBerry/i);
+        },
+        iOS: function () {
+            return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+        },
+        Opera: function () {
+            return navigator.userAgent.match(/Opera Mini/i);
+        },
+        Windows: function () {
+            return navigator.userAgent.match(/IEMobile/i);
+        },
+        any: function () {
+            return (
+                isMobile.Android() ||
+                isMobile.BlackBerry() ||
+                isMobile.iOS() ||
+                isMobile.Opera() ||
+                isMobile.Windows()
+            );
+        },
+    };
+    console.log(isMobile.any());
+
+    // Picker
+    class Picker {
+        constructor(options) {
+            this.options = Object.assign({}, options);
+            this.isPointerdown = false;
+            this.itemHeight = 30; // 列表项高度
+            this.maxY = this.itemHeight * 2;
+            this.minY = this.itemHeight * (3 - this.options.list.length);
+            this.lastY = 0;
+            this.diffY = 0;
+            this.translateY = 0; // 当前位置
+            this.friction = 0.95; // 摩擦系数
+            this.distanceY = 0; // 滑动距离
+            this.result = this.options.list[0];
+            this.render();
+            this.bindEventListener();
         }
-        getNowTime();
-        setInterval(getNowTime, 1000);
-
-        // 判断是否为手机浏览器
-        var isMobile = {
-            Android: function () {
-                return navigator.userAgent.match(/Android/i);
-            },
-            BlackBerry: function () {
-                return navigator.userAgent.match(/BlackBerry/i);
-            },
-            iOS: function () {
-                return navigator.userAgent.match(/iPhone|iPad|iPod/i);
-            },
-            Opera: function () {
-                return navigator.userAgent.match(/Opera Mini/i);
-            },
-            Windows: function () {
-                return navigator.userAgent.match(/IEMobile/i);
-            },
-            any: function () {
-                return (
-                    isMobile.Android() ||
-                    isMobile.BlackBerry() ||
-                    isMobile.iOS() ||
-                    isMobile.Opera() ||
-                    isMobile.Windows()
-                );
-            },
-        };
-        console.log(isMobile.any());
-
-        // Picker
-        class Picker {
-            constructor(options) {
-                this.options = Object.assign({}, options);
-                this.isPointerdown = false;
-                this.itemHeight = 30; // 列表项高度
-                this.maxY = this.itemHeight * 2;
-                this.minY = this.itemHeight * (3 - this.options.list.length);
-                this.lastY = 0;
-                this.diffY = 0;
-                this.translateY = 0; // 当前位置
-                this.friction = 0.95; // 摩擦系数
-                this.distanceY = 0; // 滑动距离
-                this.result = this.options.list[0];
-                this.render();
-                this.bindEventListener();
+        render() {
+            let html = '';
+            for (const item of this.options.list) {
+                html += '<div class="item">' + item + '</div>';
             }
-            render() {
-                let html = '';
-                for (const item of this.options.list) {
-                    html += '<div class="item">' + item + '</div>';
-                }
-                this.options.pickerContent.innerHTML = html;
-                this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.maxY + 'px, 0px)';
+            this.options.pickerContent.innerHTML = html;
+            this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.maxY + 'px, 0px)';
+        }
+        handlePointerdown(e) {
+            // 如果是鼠标点击，只响应左键
+            if (e.pointerType === 'mouse' && e.button !== 0) {
+                return;
             }
-            handlePointerdown(e) {
-                // 如果是鼠标点击，只响应左键
-                if (e.pointerType === 'mouse' && e.button !== 0) {
-                    return;
-                }
-                this.options.pickerColumn.setPointerCapture(e.pointerId);
-                this.isPointerdown = true;
+            this.options.pickerColumn.setPointerCapture(e.pointerId);
+            this.isPointerdown = true;
+            this.lastY = e.clientY;
+            this.diffY = 0;
+            this.distanceY = 0;
+            this.getTransform();
+            this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.translateY + 'px, 0px)';
+            this.options.pickerContent.style.transition = 'none';
+        }
+        handlePointermove(e) {
+            if (this.isPointerdown) {
+                this.diffY = e.clientY - this.lastY;
+                this.translateY += this.diffY;
                 this.lastY = e.clientY;
-                this.diffY = 0;
-                this.distanceY = 0;
-                this.getTransform();
                 this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.translateY + 'px, 0px)';
-                this.options.pickerContent.style.transition = 'none';
             }
-            handlePointermove(e) {
-                if (this.isPointerdown) {
-                    this.diffY = e.clientY - this.lastY;
-                    this.translateY += this.diffY;
-                    this.lastY = e.clientY;
-                    this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.translateY + 'px, 0px)';
-                }
+        }
+        handlePointerup(e) {
+            if (this.isPointerdown) {
+                this.isPointerdown = false;
+                this.getTranslateY();
+                // 滑动距离与时长成正比且最短时长为300ms
+                const duration = Math.max(Math.abs(this.distanceY) * 1.5, 300);
+                this.options.pickerContent.style.transition = 'transform ' + duration + 'ms ease';
+                this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.translateY + 'px, 0px)';
             }
-            handlePointerup(e) {
-                if (this.isPointerdown) {
-                    this.isPointerdown = false;
-                    this.getTranslateY();
-                    // 滑动距离与时长成正比且最短时长为300ms
-                    const duration = Math.max(Math.abs(this.distanceY) * 1.5, 300);
-                    this.options.pickerContent.style.transition = 'transform ' + duration + 'ms ease';
-                    this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.translateY + 'px, 0px)';
-                }
+        }
+        handlePointercancel(e) {
+            if (this.isPointerdown) {
+                this.isPointerdown = false;
             }
-            handlePointercancel(e) {
-                if (this.isPointerdown) {
-                    this.isPointerdown = false;
-                }
+        }
+        bindEventListener() {
+            this.handlePointerdown = this.handlePointerdown.bind(this);
+            this.handlePointermove = this.handlePointermove.bind(this);
+            this.handlePointerup = this.handlePointerup.bind(this);
+            this.handlePointercancel = this.handlePointercancel.bind(this);
+            this.options.pickerColumn.addEventListener('pointerdown', this.handlePointerdown);
+            this.options.pickerColumn.addEventListener('pointermove', this.handlePointermove);
+            this.options.pickerColumn.addEventListener('pointerup', this.handlePointerup);
+            this.options.pickerColumn.addEventListener('pointercancel', this.handlePointercancel);
+        }
+        getTransform() {
+            const transform = window.getComputedStyle(this.options.pickerContent).getPropertyValue('transform');
+            this.translateY = parseFloat(transform.split(',')[5]);
+        }
+        getTranslateY() {
+            let speed = this.diffY;
+            while (Math.abs(speed) > 1) {
+                speed *= this.friction;
+                this.distanceY += speed;
             }
-            bindEventListener() {
-                this.handlePointerdown = this.handlePointerdown.bind(this);
-                this.handlePointermove = this.handlePointermove.bind(this);
-                this.handlePointerup = this.handlePointerup.bind(this);
-                this.handlePointercancel = this.handlePointercancel.bind(this);
-                this.options.pickerColumn.addEventListener('pointerdown', this.handlePointerdown);
-                this.options.pickerColumn.addEventListener('pointermove', this.handlePointermove);
-                this.options.pickerColumn.addEventListener('pointerup', this.handlePointerup);
-                this.options.pickerColumn.addEventListener('pointercancel', this.handlePointercancel);
+            // 边界判断
+            let y = this.translateY + this.distanceY;
+            if (y > this.maxY) {
+                this.translateY = this.maxY;
+                this.distanceY = this.maxY - this.translateY;
+            } else if (y < this.minY) {
+                this.translateY = this.minY;
+                this.distanceY = this.minY - this.translateY;
+            } else {
+                this.translateY = y;
             }
-            getTransform() {
-                const transform = window.getComputedStyle(this.options.pickerContent).getPropertyValue('transform');
-                this.translateY = parseFloat(transform.split(',')[5]);
-            }
-            getTranslateY() {
-                let speed = this.diffY;
-                while (Math.abs(speed) > 1) {
-                    speed *= this.friction;
-                    this.distanceY += speed;
-                }
-                // 边界判断
-                let y = this.translateY + this.distanceY;
-                if (y > this.maxY) {
-                    this.translateY = this.maxY;
-                    this.distanceY = this.maxY - this.translateY;
-                } else if (y < this.minY) {
-                    this.translateY = this.minY;
-                    this.distanceY = this.minY - this.translateY;
-                } else {
-                    this.translateY = y;
-                }
-                // 计算停止位置使其为itemHeight的整数倍
-                let i = Math.round(this.translateY / this.itemHeight);
-                this.translateY = i * this.itemHeight;
-                this.result = this.options.list[2 - this.translateY / this.itemHeight];
+            // 计算停止位置使其为itemHeight的整数倍
+            let i = Math.round(this.translateY / this.itemHeight);
+            this.translateY = i * this.itemHeight;
+            this.result = this.options.list[2 - this.translateY / this.itemHeight];
 
-                var data_time = this.options.pickerColumn.dataset.time;
-                var now_time = new Date();
-                var now_year = now_time.getFullYear();
-                var now_month = now_time.getMonth() + 1;
-                var now_day = now_time.getDate();
-                console.log(data_time);
-                if (data_time == 'year') {
-                    if (yearPicker.result == now_year) {
-                        months = createList(1, now_month);
-                        monthPicker = new Picker({
-                            pickerColumn: pickerColumns[3],
-                            pickerContent: pickerContents[3],
-                            list: months,
-                        });
-                    }
+            var data_time = this.options.pickerColumn.dataset.time;
+            // 假如是年份滚动则月份自适应
+            if (data_time == 'year') {
+                // 判断是否是本年
+                if (yearPicker.result == now_year) {
+                    months = createList(1, now_month);
+                    monthPicker = new Picker({
+                        pickerColumn: pickerColumns[3],
+                        pickerContent: pickerContents[3],
+                        list: months,
+                    });
                 }
-                if (data_time == 'moon') {
-                    days = createList(1, getDays(Number(yearPicker.result), Number(monthPicker.result)));
+            }
+            // 假如是月份滚动则天数自适应
+            if (data_time == 'moon') {
+                days = createList(1, getDays(Number(yearPicker.result), Number(monthPicker.result)));
+                dayPicker = new Picker({
+                    pickerColumn: pickerColumns[4],
+                    pickerContent: pickerContents[4],
+                    list: days,
+                });
+                // 判断是否是本月
+                if (monthPicker.result == now_month) {
+                    days = createList(1, now_day);
                     dayPicker = new Picker({
                         pickerColumn: pickerColumns[4],
                         pickerContent: pickerContents[4],
                         list: days,
                     });
-                    if (monthPicker.result == now_month) {
-                        days = createList(1, now_day);
-                        dayPicker = new Picker({
-                            pickerColumn: pickerColumns[4],
-                            pickerContent: pickerContents[4],
-                            list: days,
-                        });
-                    }
                 }
             }
         }
+    }
 
-        // 调用方式
-        function createList(start, end) {
-            const list = [];
-            let j = 0;
-            for (i = start; i <= end; i++) {
-                list[j] = i < 10 ? '0' + i : '' + i;
-                if (j <= end) {
-                    j++;
-                }
+    // 调用方式
+    function createList(start, end) {
+        const list = [];
+        let j = 0;
+        for (i = start; i <= end; i++) {
+            list[j] = i < 10 ? '0' + i : '' + i;
+            if (j <= end) {
+                j++;
             }
-            return list;
         }
+        return list;
+    }
 
-        // 判断start_year是否为闰年
-        function isLeapYear(year) {
-            return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-        }
-        isLeapYear(start_year);
+    // 判断start_year是否为闰年
+    function isLeapYear(year) {
+        return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+    }
+    isLeapYear(start_year);
 
-        // 月份天数
-        function getDays(year, month) {
-            if (month === 2) {
-                if (isLeapYear(year)) {
-                    return 29;
-                } else {
-                    return 28;
-                }
-            } else if (
-                month === 1 ||
-                month === 3 ||
-                month === 5 ||
-                month === 7 ||
-                month === 8 ||
-                month === 10 ||
-                month === 12
-            ) {
-                return 31;
+    // 月份天数
+    function getDays(year, month) {
+        if (month === 2) {
+            if (isLeapYear(year)) {
+                return 29;
             } else {
-                return 30;
+                return 28;
+            }
+        } else if (
+            month === 1 ||
+            month === 3 ||
+            month === 5 ||
+            month === 7 ||
+            month === 8 ||
+            month === 10 ||
+            month === 12
+        ) {
+            return 31;
+        } else {
+            return 30;
+        }
+    }
+
+    // *****数据渲染*****
+    var start_year = 2000;
+    var end_year = 2022;
+    var hours = createList(0, 23),
+        minutes = createList(0, 59),
+        years = createList(start_year, end_year),
+        months = createList(1, 12),
+        days = createList(1, 31);
+    const pickerColumns = document.querySelectorAll('.picker-column');
+    const pickerContents = document.querySelectorAll('.picker-content');
+    const hourPicker = new Picker({
+        pickerColumn: pickerColumns[0],
+        pickerContent: pickerContents[0],
+        list: hours,
+    });
+    const minutePicker = new Picker({
+        pickerColumn: pickerColumns[1],
+        pickerContent: pickerContents[1],
+        list: minutes,
+    });
+    const yearPicker = new Picker({
+        pickerColumn: pickerColumns[2],
+        pickerContent: pickerContents[2],
+        list: years,
+    });
+    var monthPicker = new Picker({
+        pickerColumn: pickerColumns[3],
+        pickerContent: pickerContents[3],
+        list: months,
+    });
+    var dayPicker = new Picker({
+        pickerColumn: pickerColumns[4],
+        pickerContent: pickerContents[4],
+        list: days,
+    });
+
+    // 确定按钮
+    var sure = document.querySelectorAll('.Sure');
+    var choose = '1';
+    for (let i = 0; i < sure.length; i++) {
+        sure[i].addEventListener('click', function (e) {
+            if (choose == 1) {
+                document.querySelector('.mark').innerHTML = hourPicker.result + ':' + minutePicker.result;
+            }
+            if (choose == 2) {
+                document.querySelector('.mark').innerHTML =
+                    yearPicker.result + '-' + monthPicker.result + '-' + dayPicker.result;
+            }
+            hide_dom();
+        });
+    }
+
+    // 取消按钮
+    var cancel = document.querySelectorAll('.Cancel');
+    for (let i = 0; i < cancel.length; i++) {
+        cancel[i].addEventListener('click', function (e) {
+            hide_dom();
+        });
+    }
+
+    // 按钮点击事件
+    var choose_btn = document.querySelectorAll('.choose_btn');
+    var time_box = document.querySelectorAll('.time_box');
+    for (let i = 0; i < choose_btn.length; i++) {
+        choose_btn[i].addEventListener('click', function (e) {
+            choose = Number(e.target.dataset.choose);
+            document.querySelector('.mask_layer').style.display = 'block';
+            time_box[choose - 1].style.display = 'block';
+        });
+    }
+
+    // 按钮背景色设置
+    var bg_color = ['#0280fa', '#db3447', '#6c757d', '#2fa64d', '#febf32', '#1fa3b7'];
+    for (let i = 0; i < choose_btn.length; i++) {
+        choose_btn[i].style.backgroundColor = bg_color[i];
+    }
+
+    // 隐藏窗口
+    function hide_dom() {
+        document.querySelector('.mask_layer').style.display = 'none';
+        for (let i = 0; i < time_box.length; i++) {
+            time_box[i].style.display = 'none';
+        }
+    }
+
+    // 判断月份开始日期是周几
+    function getFirstDay(year, month) {
+        var d = new Date(year, month - 1, 1);
+        return d.getDay();
+    }
+    // 获取月天数
+    function getDaysOfMonth(year, month) {
+        var d = new Date(year, month, 0);
+        return d.getDate();
+    }
+
+    var calendarYearTxt = document.querySelector('.calendar_year');
+    var calendarMonthTxt = document.querySelector('.calendar_month');
+    calendarYearTxt.innerHTML = now_year;
+    calendarMonthTxt.innerHTML = now_month;
+    getCalendarYearMonth(Number(calendarYearTxt.innerHTML), Number(calendarMonthTxt.innerHTML));
+
+    function getCalendarYearMonth(year, month) {
+        var day_html = '';
+        var daysOfMonth = getDaysOfMonth(year, month);
+        var firstDay = getFirstDay(year, month);
+        for (let i = 1; i < daysOfMonth + firstDay; i++) {
+            if (i < firstDay) {
+                // 上个月数据絮儿
+                day_html +=
+                    '<div class="calendar_item calenda_other-month">' +
+                    (getDaysOfMonth(year, month - 1) - firstDay + 1 + i) +
+                    '</div>';
+            } else {
+                // 判断这天是否为周六或者周日
+                if (i % 7 == 0 || i % 7 == 6) {
+                    day_html +=
+                        '<div data-timeid="' +
+                        year +
+                        ('0' + month).slice(-2) +
+                        ('0' + (i - firstDay + 1)).slice(-2) +
+                        '" class="calendar_item calendar_item_week">' +
+                        (i - firstDay + 1) +
+                        '</div>';
+                } else {
+                    day_html +=
+                        '<div data-timeid="' +
+                        year +
+                        ('0' + month).slice(-2) +
+                        ('0' + (i - firstDay + 1)).slice(-2) +
+                        '" class="calendar_item">' +
+                        (i - firstDay + 1) +
+                        '</div>';
+                }
             }
         }
+        // 下个月数据多余的部分
+        for (let i = 1; i < 42 - daysOfMonth - firstDay + 2; i++) {
+            if (i % 7 == 0 || i % 7 == 6) {
+                day_html += '<div class="calendar_item calendar_item_week calenda_other-month">' + i + '</div>';
+            } else {
+                day_html += '<div class="calendar_item calenda_other-month">' + i + '</div>';
+            }
+        }
+        document.querySelector('.calendar_day').innerHTML = day_html;
+        yesToday();
+        // 假如今天被渲染了则隐藏回到今天按钮，否则显示
+        if (document.querySelector('.calendar_item_today')) {
+            document.querySelector('.calendar_btn_today').style.display = 'none';
+        } else {
+            document.querySelector('.calendar_btn_today').style.display = 'inline-block';
+            // 点击回到今天
+            document.querySelector('.calendar_btn_today').addEventListener('click', function (e) {
+                getCalendarYearMonth(now_year, now_month);
+                // 修改日历控件顶部年月
+                calendarYearTxt.innerHTML = now_year;
+                calendarMonthTxt.innerHTML = now_month;
+            });
+        }
+    }
 
-        // *****数据渲染*****
-        var start_year = 2000;
-        var end_year = 2022;
-        var hours = createList(0, 23),
-            minutes = createList(0, 59),
-            years = createList(start_year, end_year),
-            months = createList(1, 12),
-            days = createList(1, 31);
-        const pickerColumns = document.querySelectorAll('.picker-column');
-        const pickerContents = document.querySelectorAll('.picker-content');
-        const hourPicker = new Picker({
-            pickerColumn: pickerColumns[0],
-            pickerContent: pickerContents[0],
-            list: hours,
-        });
-        const minutePicker = new Picker({
-            pickerColumn: pickerColumns[1],
-            pickerContent: pickerContents[1],
-            list: minutes,
-        });
-        const yearPicker = new Picker({
-            pickerColumn: pickerColumns[2],
-            pickerContent: pickerContents[2],
-            list: years,
-        });
-        var monthPicker = new Picker({
-            pickerColumn: pickerColumns[3],
-            pickerContent: pickerContents[3],
-            list: months,
-        });
-        var dayPicker = new Picker({
-            pickerColumn: pickerColumns[4],
-            pickerContent: pickerContents[4],
-            list: days,
-        });
-
-        // 确定按钮
-        var sure = document.querySelectorAll('.Sure');
-        var choose = '1';
-        for (let i = 0; i < sure.length; i++) {
-            sure[i].addEventListener('click', function (e) {
-                if (choose == 1) {
-                    document.querySelector('.mark').innerHTML = hourPicker.result + ':' + minutePicker.result;
+    function yesToday() {
+        var calendar_item = document.querySelectorAll('.calendar_item');
+        var nowDate = now_year + now_month + now_day;
+        for (let i = 0; i < calendar_item.length; i++) {
+            if (calendar_item[i].dataset.timeid == nowDate) {
+                calendar_item[i].classList.add('calendar_item_today');
+                // 默认选中当天
+                active_time = calendar_item[i].dataset.timeid;
+                now_time_select = calendar_item[i].dataset.timeid;
+            }
+            if (calendar_item[i].dataset.timeid && calendar_item[i].dataset.timeid == active_time) {
+                calendar_item[i].classList.add('calendar_item_active');
+            }
+            // 添加点击事件
+            calendar_item[i].addEventListener('click', function (e) {
+                // 移除class
+                for (let j = 0; j < calendar_item.length; j++) {
+                    calendar_item[j].classList.remove('calendar_item_active');
                 }
-                if (choose == 2) {
-                    document.querySelector('.mark').innerHTML =
-                        yearPicker.result + '-' + monthPicker.result + '-' + dayPicker.result;
-                }
-                document.querySelector('.mask_layer').style.display = 'none';
-                // 所有dom_hide隐藏
-                var dom_hide = document.querySelectorAll('.dom_hide');
-                for (let i = 0; i < dom_hide.length; i++) {
-                    dom_hide[i].style.display = 'none';
+                if (e.target.dataset.timeid) {
+                    e.target.classList.add('calendar_item_active');
+                    active_time = e.target.dataset.timeid;
                 }
             });
         }
+    }
 
-        // 取消按钮
-        var cancel = document.querySelectorAll('.Cancel');
-        for (let i = 0; i < cancel.length; i++) {
-            cancel[i].addEventListener('click', function (e) {
-                document.querySelector('.mask_layer').style.display = 'none';
-                // 所有dom_hide隐藏
-                var dom_hide = document.querySelectorAll('.dom_hide');
-                for (let i = 0; i < dom_hide.length; i++) {
-                    dom_hide[i].style.display = 'none';
-                }
-            });
+    document.querySelector('.last_month').addEventListener('click', function (e) {
+        if (calendarMonthTxt.innerHTML == '01') {
+            calendarYearTxt.innerHTML = Number(calendarYearTxt.innerHTML) - 1;
+            calendarMonthTxt.innerHTML = 12;
+        } else {
+            calendarMonthTxt.innerHTML = ('0' + (Number(calendarMonthTxt.innerHTML) - 1)).slice(-2);
         }
+        getCalendarYearMonth(Number(calendarYearTxt.innerHTML), Number(calendarMonthTxt.innerHTML));
+    });
+    document.querySelector('.next_month').addEventListener('click', function (e) {
+        if (calendarMonthTxt.innerHTML == 12) {
+            calendarYearTxt.innerHTML = Number(calendarYearTxt.innerHTML) + 1;
+            calendarMonthTxt.innerHTML = '01';
+        } else {
+            calendarMonthTxt.innerHTML = ('0' + (Number(calendarMonthTxt.innerHTML) + 1)).slice(-2);
+        }
+        getCalendarYearMonth(Number(calendarYearTxt.innerHTML), Number(calendarMonthTxt.innerHTML));
+    });
+    document.querySelector('.last_year').addEventListener('click', function (e) {
+        calendarYearTxt.innerHTML = Number(calendarYearTxt.innerHTML) - 1;
+        getCalendarYearMonth(Number(calendarYearTxt.innerHTML), Number(calendarMonthTxt.innerHTML));
+    });
+    document.querySelector('.next_year').addEventListener('click', function (e) {
+        calendarYearTxt.innerHTML = Number(calendarYearTxt.innerHTML) + 1;
+        getCalendarYearMonth(Number(calendarYearTxt.innerHTML), Number(calendarMonthTxt.innerHTML));
+    });
 
-        // 按钮点击事件
-        var choose_btn = document.querySelectorAll('.choose_btn');
-        for (let i = 0; i < choose_btn.length; i++) {
-            choose_btn[i].addEventListener('click', function (e) {
-                choose = e.target.dataset.choose;
-                document.querySelector('.mask_layer').style.display = 'block';
-                document.querySelector('.time_box' + e.target.dataset.choose).style.display = 'block';
-            });
-        }
-    </script>
+    document.querySelector('.calendar_btn_now').onclick = function (e) {
+        var timeid = now_time_select;
+        var time = timeid.slice(0, 4) + '-' + timeid.slice(4, 6) + '-' + timeid.slice(6, 8);
+        document.querySelector('.mark').innerHTML = time;
+        hide_dom();
+    };
+    document.querySelector('.calendar_btn_sure').onclick = function (e) {
+        var timeid = active_time;
+        var time = timeid.slice(0, 4) + '-' + timeid.slice(4, 6) + '-' + timeid.slice(6, 8);
+        document.querySelector('.mark').innerHTML = time;
+        hide_dom();
+    };
+</script>
+
 </html>
