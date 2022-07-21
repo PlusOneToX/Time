@@ -25,7 +25,7 @@
         }
 
         .case {
-            padding: 16px;
+            padding: 1rem;
         }
 
         .choose_btn_box {
@@ -37,28 +37,29 @@
 
         .choose_btn {
             display: inline-block;
-            padding: 0 16px;
-            height: 40px;
-            line-height: 40px;
+            padding: 0 1rem;
+            font-size: 1.5rem;
+            height: 3rem;
+            line-height: 3rem;
             text-align: center;
             color: #fff;
-            border-radius: 10px;
+            border-radius: 0.6rem;
             font-weight: 400;
-            margin-bottom: 16px;
+            margin-bottom: 1rem;
         }
 
         .cs_time {
-            padding: 16px;
+            padding: 1rem;
             background-color: #febf32;
-            border-radius: 0 20px 0 20px;
+            border-radius: 0 1.2rem 0 1.2rem;
             color: #fff;
-            margin-bottom: 16px;
+            margin-bottom: 1rem;
         }
 
         .mark,
         .now_time {
             font-weight: bold;
-            margin-left: 16px;
+            margin-left: 1rem;
         }
 
         .mask_layer {
@@ -76,7 +77,7 @@
         .time_box {
             display: none;
             width: 80%;
-            border-radius: 10px;
+            border-radius: 0.6rem;
             background-color: #fff;
             z-index: 999;
             /* 屏幕居中 */
@@ -84,6 +85,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            overflow: hidden;
         }
 
         .time_box_btn {
@@ -96,9 +98,9 @@
         .time_box_btn .Sure,
         .time_box_btn .Cancel {
             width: 50%;
-            height: 48px;
-            line-height: 48px;
-            font-size: 16px;
+            height: 5rem;
+            line-height: 5rem;
+            font-size: 1.5rem;
             text-align: center;
             box-sizing: border-box;
         }
@@ -116,7 +118,7 @@
         .time_box_main {
             width: 100%;
             display: flex;
-            padding: 12px 0;
+            padding: 10px 0;
         }
 
         .picker-column {
@@ -193,13 +195,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 16px;
-            margin-bottom: 8px;
+            padding: 0 1rem;
+            margin-bottom: 1rem;
         }
 
         .calendar_top img {
-            width: 20px;
-            height: 20px;
+            width: 2.2rem;
+            height: 2.2rem;
+            cursor: pointer;
         }
 
         .calendar_top_img_box {
@@ -212,33 +215,33 @@
         }
 
         .calendar_time {
-            font-size: 16px;
-            line-height: 20px;
+            font-size: 1.5rem;
+            line-height: 2.2rem;
             font-weight: 700;
             color: #000;
             cursor: pointer;
         }
 
         .last_month {
-            margin-left: 16px;
+            margin-left: 1rem;
         }
 
         .next_month {
-            margin-right: 16px;
+            margin-right: 1rem;
         }
 
         .calendar_week {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 16px;
+            padding: 1rem 1rem;
             border-top: 1px solid rgba(0, 0, 0, 0.2);
             border-bottom: 1px solid rgba(0, 0, 0, 0.2);
         }
 
         .calendar_week span {
-            font-size: 12px;
-            line-height: 16px;
+            font-size: 1.3rem;
+            line-height: 1.3rem;
             font-weight: 700;
             width: calc(100% / 7);
             text-align: center;
@@ -252,15 +255,15 @@
         .calendar_day {
             display: flex;
             flex-wrap: wrap;
-            padding: 0 16px;
+            padding: 0 1rem;
             border-bottom: 1px solid rgba(0, 0, 0, 0.2);
         }
 
         .calendar_item {
             width: calc(100% / 7);
-            height: 20px;
-            height: 40px;
-            line-height: 40px;
+            font-size: 1.6rem;
+            height: 5rem;
+            line-height: 5rem;
             text-align: center;
             box-sizing: border-box;
             border-radius: 5px;
@@ -281,8 +284,8 @@
         }
 
         .calendar_btn_box {
-            padding: 0 16px;
-            margin-top: 8px;
+            padding: 0 1rem;
+            margin-top: 0.5rem;
         }
 
         .calendar_btn_box2 {
@@ -294,29 +297,30 @@
         .calendar_btn_today {
             background-color: #f7c029;
             color: #fff;
+            float: left;
         }
 
         .calendar_btn {
-            height: 24px;
-            line-height: 24px;
+            height: 3rem;
+            line-height: 3rem;
             text-align: center;
-            font-size: 12px;
+            font-size: 0.8rem;
             border-radius: 5px;
             cursor: pointer;
-            padding: 0 16px;
+            padding: 0 1rem;
         }
 
         .calendar_btn_close {
             background-color: transparent;
             color: #000;
             border: 1px solid #eee;
-            margin-right: 16px;
+            margin-right: 1rem;
         }
 
         .calendar_btn_now {
             background-color: #2196f3;
             color: #fff;
-            margin-right: 16px;
+            margin-right: 1rem;
         }
 
         .calendar_btn_sure {
@@ -433,7 +437,7 @@
                     </div>
                     <!-- 按钮 -->
                     <div class="calendar_btn_box">
-                        <div class="calendar_btn calendar_btn_today" style="display: none;">回到今天</div>
+                        <div class="calendar_btn calendar_btn_today" style="display: none">回到今天</div>
                         <div class="calendar_btn_box2">
                             <div class="calendar_btn calendar_btn_close Cancel">取消</div>
                             <div class="calendar_btn calendar_btn_now">现在</div>
@@ -452,6 +456,14 @@
             作者：谢佳毅
           ***************
         */
+
+    // 字体大小自适应
+    function fontSize() {
+        var deviceWidth = document.documentElement.clientWidth > 768 ? 768 : document.documentElement.clientWidth;
+        document.documentElement.style.fontSize = (deviceWidth / 48).toFixed(2) + 'px';
+    }
+    fontSize();
+    window.onresize = fontSize;
 
     // 获取当前时间
     var now_time = new Date();
